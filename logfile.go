@@ -144,3 +144,23 @@ func (l *Logfile) Fatal(format string, v ...interface{}) {
 	l.write(FATAL, format, v...)
 	os.Exit(1)
 }
+
+func Warn(format string, v ...interface{}) {
+	_, file, line, ok := runtime.Caller(1)
+	if !ok {
+		file = "???"
+		line = 0
+	}
+	t := time.Now()
+	s1 := fmt.Sprintf("%d%02d%02d %02d:%02d:%02d.%03d %s:%d [W] ",
+		t.Year()%2000, t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second(), t.Nanosecond()/1000000,
+		path.Base(file), line)
+
+	s2 := fmt.Sprintf(format, v...)
+	s := s1 + s2
+	if s[len(s)-1] != '\n' {
+		s += "\n"
+	}
+	os.Stderr.WriteString(s)
+}

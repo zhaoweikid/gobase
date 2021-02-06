@@ -12,11 +12,11 @@ func TestParser(t *testing.T) {
 	if conf != nil {
 		for sec, sv := range conf.Section {
 			for k, v := range sv {
-				var v2 *ConfigValue
-				v2 = &v
-				fmt.Printf("Value: %p %p\n", &v, v2)
+				//var v2 *ConfigValue
+				//v2 = &v
+				//fmt.Printf("Value: %p %p\n", &v, v2)
 				fmt.Printf("sec1:%s %s=%s\n", sec, k, v.AsString())
-				fmt.Printf("sec2:%s %s=%s\n", sec, k, v2.AsString())
+				//fmt.Printf("sec2:%s %s=%s\n", sec, k, v2.AsString())
 			}
 		}
 	}

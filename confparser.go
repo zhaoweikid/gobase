@@ -2,7 +2,6 @@ package gobase
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -59,7 +58,7 @@ func parseLine(line string) (string, string) {
 	ln := strings.TrimSpace(line)
 	pair := strings.Split(ln, "=")
 	if len(pair) != 2 {
-		os.Stderr.WriteString(fmt.Sprintf("config parse error at: %s\n", line))
+		Warn("config parse error at: %s\n", line)
 		os.Exit(1)
 	}
 
@@ -76,6 +75,7 @@ func NewConfigValue(value string) *ConfigValue {
 func (v ConfigValue) AsInt(defv int64) int64 {
 	ret, err := strconv.ParseInt(v.value, 0, 64)
 	if err != nil {
+		Warn("config parse int error: %s", v.value)
 		return defv
 	}
 	return ret
@@ -84,6 +84,7 @@ func (v ConfigValue) AsInt(defv int64) int64 {
 func (v ConfigValue) AsFloat(defv float64) float64 {
 	ret, err := strconv.ParseFloat(v.value, 64)
 	if err != nil {
+		Warn("config parse float error: %s", v.value)
 		return defv
 	}
 	return ret
@@ -92,13 +93,14 @@ func (v ConfigValue) AsFloat(defv float64) float64 {
 func (v ConfigValue) AsBool(defv bool) bool {
 	ret, err := strconv.ParseBool(v.value)
 	if err != nil {
+		Warn("config parse bool error: %s", v.value)
 		return defv
 	}
 	return ret
 }
 
 func (v ConfigValue) AsString() string {
-	fmt.Printf("ConfigValue: %p\n", &v)
+	//Warn("ConfigValue: %p\n", &v)
 	return v.value
 }
 
@@ -119,6 +121,7 @@ func (v ConfigValue) AsIntArray(defv int64) []int64 {
 	for i := 0; i < len(s); i++ {
 		a, err := strconv.ParseInt(strings.TrimSpace(s[i]), 0, 64)
 		if err != nil {
+			Warn("config parse int error: %s", v.value)
 			ret = append(ret, defv)
 		} else {
 			ret = append(ret, a)
@@ -152,6 +155,7 @@ func (v ConfigValue) AsAnyArray(restr string) []string {
 	for i := 0; i < len(s); i++ {
 		match := re.FindStringSubmatch(s[i])
 		if len(match) == 0 {
+			Warn("config parser value error: %s", v.value)
 			return nil
 		} else {
 			for j := 1; j < len(match)-1; j++ {
