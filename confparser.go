@@ -46,10 +46,10 @@ func NewConfig(filename string) *ConfigSection {
 		if line[0] == '[' {
 			sec = line[1 : len(line)-1]
 			c.Section[sec] = make(map[string]ConfigValue)
+		}else{
+			key, value := parseLine(line)
+			c.Section[sec][key] = *NewConfigValue(value)
 		}
-
-		key, value := parseLine(line)
-		c.Section[sec][key] = *NewConfigValue(value)
 	}
 
 	return conf
@@ -73,7 +73,7 @@ func NewConfigValue(value string) *ConfigValue {
 	return &ConfigValue{value: value}
 }
 
-func (v *ConfigValue) AsInt(defv int64) int64 {
+func (v ConfigValue) AsInt(defv int64) int64 {
 	ret, err := strconv.ParseInt(v.value, 0, 64)
 	if err != nil {
 		return defv
@@ -81,7 +81,7 @@ func (v *ConfigValue) AsInt(defv int64) int64 {
 	return ret
 }
 
-func (v *ConfigValue) AsFloat(defv float64) float64 {
+func (v ConfigValue) AsFloat(defv float64) float64 {
 	ret, err := strconv.ParseFloat(v.value, 64)
 	if err != nil {
 		return defv
@@ -89,7 +89,7 @@ func (v *ConfigValue) AsFloat(defv float64) float64 {
 	return ret
 }
 
-func (v *ConfigValue) AsBool(defv bool) bool {
+func (v ConfigValue) AsBool(defv bool) bool {
 	ret, err := strconv.ParseBool(v.value)
 	if err != nil {
 		return defv
@@ -97,11 +97,12 @@ func (v *ConfigValue) AsBool(defv bool) bool {
 	return ret
 }
 
-func (v *ConfigValue) AsString() string {
+func (v ConfigValue) AsString() string {
+	fmt.Printf("ConfigValue: %p\n", &v)
 	return v.value
 }
 
-func (v *ConfigValue) AsStrArray() []string {
+func (v ConfigValue) AsStrArray() []string {
 	s := strings.Split(v.value, ",")
 
 	for i := 0; i < len(s); i++ {
@@ -110,7 +111,7 @@ func (v *ConfigValue) AsStrArray() []string {
 	return s
 }
 
-func (v *ConfigValue) AsIntArray(defv int64) []int64 {
+func (v ConfigValue) AsIntArray(defv int64) []int64 {
 	s := strings.Split(v.value, ",")
 
 	var ret []int64
@@ -126,7 +127,7 @@ func (v *ConfigValue) AsIntArray(defv int64) []int64 {
 	return ret
 }
 
-func (v *ConfigValue) AsFloatArray(defv float64) []float64 {
+func (v ConfigValue) AsFloatArray(defv float64) []float64 {
 	s := strings.Split(v.value, ",")
 
 	var ret []float64
@@ -142,7 +143,7 @@ func (v *ConfigValue) AsFloatArray(defv float64) []float64 {
 	return ret
 }
 
-func (v *ConfigValue) AsAnyArray(restr string) []string {
+func (v ConfigValue) AsAnyArray(restr string) []string {
 	s := strings.Split(v.value, ",")
 
 	re := regexp.MustCompile(restr)
